@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Wellness Hub</title>
+    <style>
+        :root {
+            --primary: #5c6e91;
+            --secondary: #a7c5eb;
+            --accent: #e6c2bf;
+            --light: #f5f5f5;
+            --dark: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--secondary);
+            color: var(--dark);
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .tab:hover {
+            background-color: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section {
+            display: none;
+            padding: 1rem;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+            text-align: center;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .video-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .video-info {
+            padding: 1rem;
+        }
+        
+        .video-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .video-url {
+            font-size: 0.9rem;
+            color: var(--primary);
+            word-break: break-all;
+        }
+
+        /* Booking call section styles */
+        .booking-section {
+            background-color: var(--secondary);
+            margin: 3rem 0;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .booking-title {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .booking-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-text {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        .submit-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            margin: 0 auto;
+            min-width: 200px;
+        }
+
+        .submit-btn:hover {
+            background-color: #4a5a77;
+            transform: translateY(-2px);
+        }
+
+        .booking-confirmation {
+            display: none;
+            background-color: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .booking-error {
+            display: none;
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        footer {
+            background-color: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .tab {
+                width: 80%;
+                text-align: center;
+                margin-bottom: 0.5rem;
+            }
+            
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mental Wellness Hub</h1>
+        <p class="subtitle">Resources for your mental wellbeing journey</p>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-section="meditation">Meditation</button>
+            <button class="tab" data-section="mindfulness">Mindfulness</button>
+            <button class="tab" data-section="yoga">Yoga</button>
+            <button class="tab" data-section="positive-thinking">Positive Thinking</button>
+            <button class="tab" data-section="gratitude">Gratitude Practices</button>
+        </div>
+        
+        <div id="meditation" class="section active">
+            <h2 class="section-title">Meditation</h2>
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-container" data-video-id="O-6f5wQXSu8">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">10-Minute Meditation For Beginners</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=O-6f5wQXSu8</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="inpok4MKVLM">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">5-Minute Meditation You Can Do Anywhere</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=inpok4MKVLM</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="U9YKY7fdwyg">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Deep Relaxation Meditation</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=U9YKY7fdwyg</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="mindfulness" class="section">
+            <h2 class="section-title">Mindfulness</h2>
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-container" data-video-id="ZToicYcHIOU">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Mindfulness Exercise: The Five Senses</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=ZToicYcHIOU</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="6p_yaNFSYao">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Mindful Breathing Practice</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=6p_yaNFSYao</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="yoga" class="section">
+            <h2 class="section-title">Yoga</h2>
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-container" data-video-id="v7AYKMP6rOE">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Morning Yoga for Beginners</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=v7AYKMP6rOE</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="dTnfuv-z-Lw">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Yoga for Stress Relief</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=dTnfuv-z-Lw</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="4pKly2JojMw">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Yoga for Better Sleep</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=4pKly2JojMw</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="positive-thinking" class="section">
+            <h2 class="section-title">Positive Thinking</h2>
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-container" data-video-id="KM_ZBz5G7WI">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Positive Affirmations for a Positive Day</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=KM_ZBz5G7WI</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="2IPPMNmzYFU">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">How to Train Your Brain for Positivity</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=2IPPMNmzYFU</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="gratitude" class="section">
+            <h2 class="section-title">Gratitude Practices</h2>
+            <div class="video-grid">
+                <div class="video-card">
+                    <div class="video-container" data-video-id="gvO1JUfGo7k">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">5 Minute Guided Gratitude Meditation</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=gvO1JUfGo7k</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="WPPPFqsECz0">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">How to Start a Gratitude Journal</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=WPPPFqsECz0</p>
+                    </div>
+                </div>
+                
+                <div class="video-card">
+                    <div class="video-container" data-video-id="sOP0YNJ6a2w">
+                        <iframe src="about:blank" title="YouTube video player" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h3 class="video-title">Daily Gratitude Practice for Happiness</h3>
+                        <p class="video-url">https://www.youtube.com/watch?v=sOP0YNJ6a2w</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Book a Call Section -->
+        <div class="booking-section">
+            <h2 class="booking-title">Book a Call with Our Wellness Expert</h2>
+            <form id="booking-form" class="booking-form">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" class="form-control">
+                    <small class="form-text">Optional, but helpful for call reminders</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">Preferred Date</label>
+                    <input type="date" id="date" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="time">Preferred Time</label>
+                    <select id="time" class="form-control" required>
+                        <option value="">Select a time</option>
+                        <option value="9:00">9:00 AM</option>
+                        <option value="10:00">10:00 AM</option>
+                        <option value="11:00">11:00 AM</option>
+                        <option value="13:00">1:00 PM</option>
+                        <option value="14:00">2:00 PM</option>
+                        <option value="15:00">3:00 PM</option>
+                        <option value="16:00">4:00 PM</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="topic">What would you like to discuss?</label>
+                    <textarea id="topic" class="form-control" rows="4"></textarea>
+                </div>
+                
+                <button type="submit" class="submit-btn">Request Call</button>
+                
+                <div id="booking-confirmation" class="booking-confirmation">
+                    Thank you! Your call request has been submitted. We'll contact you shortly to confirm.
+                </div>
+                <div id="booking-error" class="booking-error">
+                    There was an error submitting your request. Please try again.
+                </div>
+            </form>
+        </div>
+    
+    <footer>
+        <p>© 2025 Mental Wellness Hub | Take care of your mind, it's the only one you have</p>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.tab');
+            const sections = document.querySelectorAll('.section');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const sectionId = this.getAttribute('data-section');
+                    
+                    // Remove active class from all tabs and sections
+                    tabs.forEach(t => t.classList.remove('active'));
+                    sections.forEach(s => s.classList.remove('active'));
+                    
+                    // Add active class to current tab and section
+                    this.classList.add('active');
+                    document.getElementById(sectionId).classList.add('active');
+                });
+            });
+            
+            // Video hover functionality
+            const videoContainers = document.querySelectorAll('.video-container');
+            
+            videoContainers.forEach(container => {
+                const videoId = container.getAttribute('data-video-id');
+                const iframe = container.querySelector('iframe');
+                
+                // Set thumbnail initially
+                iframe.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                
+                // Create a div to represent the thumbnail and capture hover events
+                const thumbnailOverlay = document.createElement('div');
+                thumbnailOverlay.style.position = 'absolute';
+                thumbnailOverlay.style.top = '0';
+                thumbnailOverlay.style.left = '0';
+                thumbnailOverlay.style.width = '100%';
+                thumbnailOverlay.style.height = '100%';
+                thumbnailOverlay.style.cursor = 'pointer';
+                container.appendChild(thumbnailOverlay);
+                
+                // On hover - load the video
+                thumbnailOverlay.addEventListener('mouseenter', function() {
+                    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1`;
+                });
+                
+                // On mouse leave - reset to thumbnail
+                thumbnailOverlay.addEventListener('mouseleave', function() {
+                    iframe.src = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+                });
+                
+                // On click - open YouTube video in new tab
+                thumbnailOverlay.addEventListener('click', function() {
+                    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+                });
+            });
+            // Booking form submission
+            const bookingForm = document.getElementById('booking-form');
+            const bookingConfirmation = document.getElementById('booking-confirmation');
+            const bookingError = document.getElementById('booking-error');
+
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Hide any previous messages
+                bookingConfirmation.style.display = 'none';
+                bookingError.style.display = 'none';
+
+                // Get form values
+                const formData = new FormData();
+                formData.append('name', document.getElementById('name').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('phone', document.getElementById('phone').value);
+                formData.append('date', document.getElementById('date').value);
+                formData.append('time', document.getElementById('time').value);
+                formData.append('topic', document.getElementById('topic').value);
+
+                // Send AJAX request to Flask backend
+                fetch('/submit_booking', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Show success message
+                        bookingConfirmation.style.display = 'block';
+                        // Reset form
+                        bookingForm.reset();
+                        // Hide confirmation after 5 seconds
+                        setTimeout(() => {
+                            bookingConfirmation.style.display = 'none';
+                        }, 5000);
+                    } else {
+                        // Show error message
+                        bookingError.textContent = data.message || 'There was an error submitting your request. Please try again.';
+                        bookingError.style.display = 'block';
+                        // Hide error after 5 seconds
+                        setTimeout(() => {
+                            bookingError.style.display = 'none';
+                        }, 5000);
+                    }
+                })
+                .catch(error => {
+                    // Show error message
+                    bookingError.textContent = 'Network error: Unable to submit your request. Please try again.';
+                    bookingError.style.display = 'block';
+                    // Hide error after 5 seconds
+                    setTimeout(() => {
+                        bookingError.style.display = 'none';
+                    }, 5000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
