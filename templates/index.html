@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIFITPRO - Perfect Your Form, Transform Your Life</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.72.0/lucide.min.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .hero-pattern {
+      background-image:
+        linear-gradient(to right, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8)),
+        url('/api/placeholder/1600/900');
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50" onload="checkLoginStatus()">
+
+  <!-- Navigation -->
+  <nav class="bg-white shadow-md fixed w-full z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16">
+        <div class="flex items-center">
+          <span class="text-indigo-600 text-xl font-bold">AIFITPRO</span>
+          <div class="hidden md:ml-6 md:flex md:space-x-8">
+            <a href="#home"
+              class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Home
+            </a>
+            <a href="#features"
+              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Features
+            </a>
+            <a href="#dashboard"
+              class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+              Dashboard
+            </a>
+          </div>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="/signup"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+            Sign Up
+          </a>
+          <div id="auth-buttons">
+            <button onclick="openLoginModal()"
+              class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+      <h2 class="text-xl font-bold mb-4">Login to PoseFit</h2>
+      <form id="login-form" action="/login" method="POST">
+        <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
+        <input type="email" id="email" name="email" required class="w-full px-3 py-2 border rounded-md mb-3">
+
+        <label for="password" class="block text-sm font-medium text-gray-700">Password:</label>
+        <input type="password" id="password" name="password" required class="w-full px-3 py-2 border rounded-md mb-3">
+
+        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">
+          Login
+        </button>
+      </form>
+      <button onclick="closeLoginModal()" class="mt-4 w-full bg-gray-400 text-white py-2 rounded-md hover:bg-gray-500">
+        Cancel
+      </button>
+      <div id="login-error" class="mt-3 text-red-600 text-sm hidden"></div>
+    </div>
+  </div>
+
+  <script>
+    function openLoginModal() {
+      document.getElementById('login-modal').classList.remove('hidden');
+      document.getElementById('login-error').classList.add('hidden');
+    }
+
+    function closeLoginModal() {
+      document.getElementById('login-modal').classList.add('hidden');
+    }
+
+    function checkLoginStatus() {
+      const loggedInEmail = localStorage.getItem('loggedInUser');
+      if (loggedInEmail) {
+        document.getElementById('auth-buttons').innerHTML = `
+        <span class="text-sm text-gray-700">Logged in as <strong>${loggedInEmail}</strong></span>
+        <button onclick="logout()" class="ml-3 px-3 py-1 text-white bg-red-600 rounded-md hover:bg-red-700">
+          Logout
+        </button>
+      `;
+      }
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({ email: email, password: password })
+        });
+
+        // Get the response as JSON
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem('loggedInUser', email);
+          closeLoginModal();
+          checkLoginStatus();
+        } else {
+          document.getElementById('login-error').textContent = "Invalid email or password";
+          document.getElementById('login-error').classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        document.getElementById('login-error').textContent = "An error occurred during login";
+        document.getElementById('login-error').classList.remove('hidden');
+      }
+    });
+
+    function logout() {
+      localStorage.removeItem('loggedInUser');
+      location.reload();
+    }
+  </script>
+
+  <!-- Hero Section -->
+  <section id="home" class="pt-16">
+    <div class="hero-pattern min-h-[90vh] flex items-center">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-white">
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8">
+          <div class="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left lg:flex lg:items-center">
+            <div>
+              <h1 class="text-4xl tracking-tight font-extrabold sm:text-5xl xl:text-6xl">
+                Perfect Your Form,<br> Transform Your Life
+              </h1>
+              <p class="mt-3 text-base text-white sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
+                AI-powered fitness analysis and personalized training plans to help you achieve your health goals safely
+                and effectively.
+              </p>
+              <div class="mt-8 sm:mt-10">
+                <a href="#features"
+                  class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-indigo-700 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-8">
+                  Explore Features
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="mt-12 lg:mt-0 lg:col-span-6">
+            <div class="relative h-64 sm:h-72 md:h-96 lg:h-full">
+              <!-- SVG Fitness Diagram -->
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 400" class="w-full h-full">
+                <style>
+                  .figure {
+                    fill: white;
+                  }
+
+                  .line {
+                    stroke: rgba(255, 255, 255, 0.7);
+                    stroke-width: 2;
+                  }
+
+                  .label {
+                    fill: white;
+                    font-size: 12px;
+                    text-anchor: middle;
+                  }
+
+                  .highlight {
+                    fill: #FCD34D;
+                    opacity: 0.7;
+                  }
+                </style>
+                <!-- Human figure outline -->
+                <path class="figure"
+                  d="M250,50 Q275,50 285,60 Q295,70 295,80 Q295,90 285,100 Q275,110 250,110 Q225,110 215,100 Q205,90 205,80 Q205,70 215,60 Q225,50 250,50 Z" />
+                <path class="figure"
+                  d="M250,110 L250,220 M230,220 L270,220 M250,150 L210,190 M250,150 L290,190 M250,220 L230,320 M250,220 L270,320 M230,320 L225,370 M270,320 L275,370" />
+                <!-- Measurement lines -->
+                <line class="line" x1="180" y1="80" x2="205" y2="80" />
+                <line class="line" x1="295" y1="80" x2="320" y2="80" />
+                <text class="label" x="165" y="85">Head</text>
+                <text class="label" x="335" y="85">Alignment</text>
+                <line class="line" x1="180" y1="150" x2="210" y2="150" />
+                <line class="line" x1="290" y1="150" x2="320" y2="150" />
+                <text class="label" x="165" y="155">Shoulders</text>
+                <text class="label" x="335" y="155">Balanced</text>
+                <line class="line" x1="180" y1="185" x2="210" y2="190" />
+                <line class="line" x1="290" y1="190" x2="320" y2="185" />
+                <text class="label" x="165" y="190">Arms</text>
+                <text class="label" x="335" y="190">Engaged</text>
+                <!-- Highlighted areas -->
+                <circle class="highlight" cx="250" cy="80" r="15" />
+                <circle class="highlight" cx="250" cy="150" r="12" />
+                <rect class="highlight" x="245" y="170" width="10" height="50" rx="5" />
+                <!-- Angle measurements -->
+                <path class="line" d="M250,150 A40,40 0 0,1 290,170" fill="none" />
+                <text class="label" x="275" y="140">95°</text>
+                <path class="line" d="M250,220 A30,30 0 0,1 270,240" fill="none" />
+                <text class="label" x="270" y="223">87°</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          Comprehensive Fitness Features
+        </h2>
+        <p class="mt-4 text-xl text-gray-600">
+          Everything you need to achieve your fitness goals in one place
+        </p>
+      </div>
+
+      <div class="mt-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <!-- Feature 1: Pose Analysis -->
+        <a href="http://127.0.0.1:3030" class="block">
+          <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+                <i data-lucide="activity" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900">Pose Analysis</h3>
+              <p class="mt-2 text-base text-gray-600">
+                AI-powered analysis of your workout form to prevent injuries and maximize results
+              </p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Feature 2: Nutrition Plans -->
+        <a href="http://127.0.0.1:3012" class="block">
+          <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+                <i data-lucide="apple" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900">Nutrition Plans</h3>
+              <p class="mt-2 text-base text-gray-600">
+                Personalized meal plans and nutritional guidance based on your fitness goals
+              </p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Feature 3: Water Intake -->
+        <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+              <i data-lucide="droplet" class="h-6 w-6"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Water Intake</h3>
+            <p class="mt-2 text-base text-gray-600">
+              Track your hydration levels and get reminders to stay properly hydrated throughout the day
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 4: Mental Wellness -->
+        <a href="http://127.0.0.1:5001" class="block">
+          <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+                <i data-lucide="brain" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900">Mental Wellness</h3>
+              <p class="mt-2 text-base text-gray-600">
+                Guided meditation, stress management, and mood tracking to support overall well-being
+              </p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Feature 5: Injury History -->
+        <a href="http://127.0.0.1:5002" class="block">
+          <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+                <i data-lucide="bandage" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900">Injury History</h3>
+              <p class="mt-2 text-base text-gray-600">
+                Log past injuries to receive customized workout modifications that protect vulnerable areas
+              </p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Feature 6: Heart Rate Monitor -->
+        <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+              <i data-lucide="heart-pulse" class="h-6 w-6"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Heart Rate Monitor</h3>
+            <p class="mt-2 text-base text-gray-600">
+              Connect your fitness devices to track heart rate zones during workouts for optimal training
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 7: Challenges -->
+        <a href="http://127.0.0.1:3009" class="block">
+          <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+                <i data-lucide="trophy" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900">Challenges</h3>
+              <p class="mt-2 text-base text-gray-600">
+                Join community challenges to stay motivated and compete with friends
+              </p>
+            </div>
+          </div>
+        </a>
+
+        <!-- Feature 8: Workout Plans -->
+        <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+          <div class="px-4 py-5 sm:p-6">
+            <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+              <i data-lucide="dumbbell" class="h-6 w-6"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900">Workout Plans</h3>
+            <p class="mt-2 text-base text-gray-600">
+              Personalized training programs that adapt based on your progress and feedback
+            </p>
+          </div>
+        </div>
+
+        <!-- Feature 9: AI Fitness Chatbot -->
+        <a href="http://127.0.0.1:3001" class="block">
+          <div class="bg-white overflow-hidden shadow rounded-lg h-full hover:shadow-lg transition-shadow duration-300">
+            <div class="px-4 py-5 sm:p-6">
+              <div class="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-500 text-white mb-5">
+                <i data-lucide="message-circle" class="h-6 w-6"></i>
+              </div>
+              <h3 class="text-lg font-medium text-gray-900">AI Fitness Chatbot</h3>
+              <p class="mt-2 text-base text-gray-600">
+                24/7 support and guidance from our AI assistant to answer your fitness questions
+              </p>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dashboard Section -->
+  <section id="dashboard" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center">
+        <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+          Track Your Progress
+        </h2>
+        <p class="mt-4 text-xl text-gray-600">
+          Visualize your fitness journey with our comprehensive dashboard
+        </p>
+      </div>
+
+      <div class="mt-16 bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="px-4 py-5 sm:p-6">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Progress Overview -->
+            <div class="lg:col-span-2">
+              <h3 class="text-lg font-medium text-gray-900 mb-4">Workout Progress Overview</h3>
+              <div class="h-80">
+                <canvas id="progressChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Weekly Stats -->
+            <div>
+              <h3 class="text-lg font-medium text-gray-900 mb-4">This Week's Summary</h3>
+              <div class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-500">Workouts Completed</span>
+                    <span class="text-lg font-bold text-indigo-600">5/7</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 71%"></div>
+                  </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-500">Average Intensity</span>
+                    <span class="text-lg font-bold text-indigo-600">7.8/10</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 78%"></div>
+                  </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-500">Water Goal</span>
+                    <span class="text-lg font-bold text-indigo-600">2.5/3L</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 83%"></div>
+                  </div>
+                </div>
+                <div class="bg-gray-50 rounded-lg p-4">
+                  <div class="flex justify-between items-center">
+                    <span class="text-sm font-medium text-gray-500">Active Minutes</span>
+                    <span class="text-lg font-bold text-indigo-600">187/150</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2 mt-2">
+                    <div class="bg-indigo-600 h-2 rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Activity Timeline -->
+          <div class="mt-10">
+            <h3 class="text-lg font-medium text-gray-900 mb-4">Recent Activity</h3>
+            <div class="flow-root">
+              <ul class="-mb-8">
+                <li>
+                  <div class="relative pb-8">
+                    <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <span
+                          class="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center ring-8 ring-white">
+                          <i data-lucide="check" class="h-5 w-5 text-white"></i>
+                        </span>
+                      </div>
+                      <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                        <div>
+                          <p class="text-sm text-gray-500">
+                            Completed <span class="font-medium text-gray-900">Upper Body Strength</span> workout
+                          </p>
+                        </div>
+                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                          <time>2h ago</time>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="relative pb-8">
+                    <span class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <span
+                          class="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center ring-8 ring-white">
+                          <i data-lucide="droplet" class="h-5 w-5 text-white"></i>
+                        </span>
+                      </div>
+                      <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                        <div>
+                          <p class="text-sm text-gray-500">
+                            Reached <span class="font-medium text-gray-900">80%</span> of daily water goal
+                          </p>
+                        </div>
+                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                          <time>6h ago</time>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                <li>
+                  <div class="relative pb-8">
+                    <div class="relative flex space-x-3">
+                      <div>
+                        <span
+                          class="h-8 w-8 rounded-full bg-purple-500 flex items-center justify-center ring-8 ring-white">
+                          <i data-lucide="activity" class="h-5 w-5 text-white"></i>
+                        </span>
+                      </div>
+                      <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
+                        <div>
+                          <p class="text-sm text-gray-500">
+                            New personal record: <span class="font-medium text-gray-900">5K Run (22:45)</span>
+                          </p>
+                        </div>
+                        <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                          <time>Yesterday</time>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white">
+    <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:py-16 lg:px-8">
+      <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+        <div class="space-y-8 xl:col-span-1">
+          <span class="text-2xl font-bold">PoseFit</span>
+          <p class="text-gray-300 text-base">
+            Transforming fitness through technology and personalization.
+          </p>
+          <div class="flex space-x-6">
+            <a href="#" class="text-gray-400 hover:text-white">
+              <span class="sr-only">Facebook</span>
+              <i data-lucide="facebook" class="h-6 w-6"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white">
+              <span class="sr-only">Instagram</span>
+              <i data-lucide="instagram" class="h-6 w-6"></i>
+            </a>
+            <a href="#" class="text-gray-400 hover:text-white">
+              <span class="sr-only">Twitter</span>
+              <i data-lucide="twitter" class="h-6 w-6"></i>
+            </a>
+          </div>
+        </div>
+        <div class="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
+          <div class="md:grid md:grid-cols-2 md:gap-8">
+            <div>
+              <h3 class="text-sm font-semibold uppercase tracking-wider">
+                Features
+              </h3>
+              <ul class="mt-4 space-y-4">
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Pose Analysis</a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Nutrition Plans</a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Water Tracking</a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Workout Plans</a>
+                </li>
+              </ul>
+            </div>
+            <div class="mt-12 md:mt-0">
+              <h3 class="text-sm font-semibold uppercase tracking-wider">
+                Support
+              </h3>
+              <ul class="mt-4 space-y-4">
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">FAQ</a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Contact Us</a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Privacy Policy</a>
+                </li>
+                <li>
+                  <a href="#" class="text-base text-gray-300 hover:text-white">Terms of Service</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-12 border-t border-gray-700 pt-8">
+        <p class="text-base text-gray-400 xl:text-center">
+          &copy; 2025 PoseFit. All rights reserved.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Initialize Lucide icons
+    lucide.createIcons();
+
+    // Initialize the progress chart
+    const ctx = document.getElementById('progressChart').getContext('2d');
+    const progressChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [
+          {
+            label: 'Workouts Completed',
+            data: [8, 12, 18, 15, 22, 25],
+            borderColor: 'rgb(99, 102, 241)',
+            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+            tension: 0.3,
+            fill: true
+          },
+          {
+            label: 'Average Intensity',
+            data: [5.2, 5.8, 6.3, 6.7, 7.2, 7.8],
+            borderColor: 'rgb(168, 85, 247)',
+            backgroundColor: 'rgba(168, 85, 247, 0.1)',
+            tension: 0.3,
+            fill: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: {
+              drawBorder: false
+            }
+          },
+          x: {
+            grid: {
+              display: false
+            }
+          }
+        },
+        plugins: {
+          legend: {
+            position: 'bottom'
+          }
+        }
+      }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('href');
+        const targetElement = document.querySelector(targetId);
+        const navHeight = document.querySelector('nav').offsetHeight;
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - navHeight,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

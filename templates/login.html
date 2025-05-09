@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PoseFit - Login</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded-lg shadow-lg w-96">
+    <div class="text-center mb-6">
+      <span class="text-indigo-600 text-2xl font-bold">PoseFit</span>
+      <h2 class="text-xl font-bold mt-4">Login to PoseFit</h2>
+    </div>
+    <form id="login-form" action="/login" method="POST">
+      <div class="mb-4">
+        <label for="email" class="block text-sm font-medium text-gray-700">Email:</label>
+        <input type="email" id="email" name="email" required class="w-full px-3 py-2 border rounded-md mt-1">
+      </div>
+
+      <div class="mb-6">
+        <label for="password" class="block text-sm font-medium text-gray-700">Password:</label>
+        <input type="password" id="password" name="password" required class="w-full px-3 py-2 border rounded-md mt-1">
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-700">
+        Login
+      </button>
+    </form>
+    <div id="login-error" class="mt-3 text-red-600 text-sm hidden"></div>
+    <div class="mt-4 text-center">
+      <p class="text-sm text-gray-600">
+        Don't have an account? <a href="/signup" class="text-indigo-600 hover:text-indigo-800">Sign Up</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async function (event) {
+      event.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const errorElement = document.getElementById('login-error');
+
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({ email: email, password: password })
+        });
+
+        // Get the response as JSON
+        const result = await response.json();
+
+        if (result.success) {
+          localStorage.setItem('loggedInUser', email);
+          window.location.href = '/dashboard'; // Redirect to dashboard after successful login
+        } else {
+          errorElement.textContent = "Invalid email or password!";
+          errorElement.classList.remove('hidden');
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        errorElement.textContent = "An error occurred during login.";
+        errorElement.classList.remove('hidden');
+      }
+    });
+  </script>
+</body>
+
+</html>
