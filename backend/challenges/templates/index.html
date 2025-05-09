@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Fitness Challenges</title>
+    <style>
+        :root {
+            --primary: #4CAF50;
+            --primary-dark: #388E3C;
+            --accent: #FF5722;
+            --light-bg: #f9f9f9;
+            --dark-text: #333;
+            --light-text: #fff;
+            --gray: #ddd;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: var(--primary);
+            color: var(--light-text);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        .challenges-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .points-display {
+            background-color: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .challenge-card {
+            background: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .challenge-title {
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            color: var(--primary-dark);
+        }
+        
+        .challenge-details {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .complete-button {
+            margin-top: 1rem;
+            display: block;
+            width: 100%;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from {transform: translateY(-50px); opacity: 0;}
+            to {transform: translateY(0); opacity: 1;}
+        }
+        
+        .close {
+            float: right;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .badge {
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .badge-icon {
+            font-size: 4rem;
+            color: var(--accent);
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error-message {
+            color: #D32F2F;
+            text-align: center;
+            padding: 1.5rem;
+            background: #FFEBEE;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Daily Fitness Challenges</h1>
+    </header>
+    
+    <div class="container">
+        <div class="challenges-header">
+            <h2>Today's Challenges</h2>
+            <div class="points-display">
+                <span id="points">0</span> Points
+            </div>
+        </div>
+        
+        <div id="challenges-container">
+            <!-- Challenges will be loaded here -->
+            <div class="loading">Loading challenges...</div>
+        </div>
+    </div>
+    
+    <div id="completion-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Challenge Completed!</h2>
+            <div class="badge">
+                <div class="badge-icon">🏆</div>
+                <h3 id="points-earned">+10 Points!</h3>
+            </div>
+            <p>Great job! You've completed this challenge and earned points.</p>
+            <button id="close-modal">Continue</button>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 Daily Fitness Challenges - Your daily fitness companion</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize points from localStorage
+            let points = parseInt(localStorage.getItem('fitnessPoints') || '0');
+            document.getElementById('points').textContent = points;
+            
+            // Get completed challenges from localStorage
+            let completedChallenges = JSON.parse(localStorage.getItem('completedChallenges') || '[]');
+            
+            // Modal handling
+            const modal = document.getElementById('completion-modal');
+            const closeBtn = document.querySelector('.close');
+            const closeModalBtn = document.getElementById('close-modal');
+            
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            closeModalBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+            
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+            
+            // Load challenges
+            loadChallenges();
+            
+            // Complete challenge function
+            window.completeChallenge = function(challengeId, pointsValue) {
+                // Don't allow completing the same challenge twice
+                if (completedChallenges.includes(challengeId)) {
+                    return;
+                }
+                
+                // Update points
+                points += pointsValue;
+                document.getElementById('points').textContent = points;
+                
+                // Save to localStorage
+                localStorage.setItem('fitnessPoints', points.toString());
+                completedChallenges.push(challengeId);
+                localStorage.setItem('completedChallenges', JSON.stringify(completedChallenges));
+                
+                // Update UI
+                document.getElementById('points-earned').textContent = `+${pointsValue} Points!`;
+                modal.style.display = 'block';
+                
+                // Disable the button
+                const button = document.querySelector(`button[data-id="${challengeId}"]`);
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Completed';
+                    button.style.backgroundColor = '#999';
+                }
+            };
+            
+            function loadChallenges() {
+                fetch('/challenges')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const container = document.getElementById('challenges-container');
+                    container.innerHTML = ''; // Clear loading message
+                    
+                    if (data && data.length > 0) {
+                        data.forEach(challenge => {
+                            const isCompleted = completedChallenges.includes(challenge.id);
+                            const card = createChallengeCard(challenge, isCompleted);
+                            container.appendChild(card);
+                        });
+                    } else {
+                        container.innerHTML = '<p class="error-message">No challenges available today. Check back later!</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading challenges:', error);
+                    document.getElementById('challenges-container').innerHTML = 
+                        '<p class="error-message">Could not load challenges. Please try again later.</p>';
+                });
+            }
+            
+            function createChallengeCard(challenge, isCompleted) {
+                const card = document.createElement('div');
+                card.className = 'challenge-card';
+                
+                const title = document.createElement('h3');
+                title.className = 'challenge-title';
+                title.textContent = challenge.title;
+                
+                const description = document.createElement('p');
+                description.textContent = challenge.description;
+                
+                const details = document.createElement('div');
+                details.className = 'challenge-details';
+                
+                const points = document.createElement('span');
+                points.textContent = `${challenge.points} points`;
+                
+                const difficulty = document.createElement('span');
+                difficulty.textContent = `Difficulty: ${challenge.difficulty}`;
+                
+                details.appendChild(points);
+                details.appendChild(difficulty);
+                
+                const button = document.createElement('button');
+                button.className = 'complete-button';
+                button.textContent = isCompleted ? 'Completed' : 'Mark as Complete';
+                button.setAttribute('data-id', challenge.id);
+                
+                if (isCompleted) {
+                    button.disabled = true;
+                    button.style.backgroundColor = '#999';
+                } else {
+                    button.addEventListener('click', function() {
+                        completeChallenge(challenge.id, challenge.points);
+                    });
+                }
+                
+                card.appendChild(title);
+                card.appendChild(description);
+                card.appendChild(details);
+                card.appendChild(button);
+                
+                return card;
+            }
+            
+            // Check if we need to reset challenges (new day)
+            const today = new Date().toDateString();
+            const lastVisit = localStorage.getItem('lastVisit');
+            
+            if (lastVisit !== today) {
+                // It's a new day, reset completed challenges
+                completedChallenges = [];
+                localStorage.setItem('completedChallenges', JSON.stringify(completedChallenges));
+                localStorage.setItem('lastVisit', today);
+            }
+        });
+    </script>
+</body>
+</html>
